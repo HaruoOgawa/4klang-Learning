@@ -1,7 +1,10 @@
 #pragma warning(disable : 4996)
 
+#include "SoundPlayer.h"
 #include <stdint.h>
-#include <fstream>
+#include <Windows.h>
+#include <vector>
+#include <time.h>
 
 //this struct is the minimal required header data for a wav file
 struct SMinimalWaveFileHeader
@@ -28,14 +31,8 @@ struct SMinimalWaveFileHeader
 	//then comes the data!
 };
 
-bool WriteWaveFile(const char* FileName, void* pData, int32_t nDataSize, int16_t nNumChannels, int32_t nSampleRate, int32_t nBitsPerSample)
+void GetWaveHeader(SMinimalWaveFileHeader& waveHeader, int32_t nDataSize, int16_t nNumChannels, int32_t nSampleRate, int32_t nBitsPerSample)
 {
-	// ファイルオブジェクトの生成
-	FILE* File = fopen(FileName, "w+b");
-	if (!File) return false;
-
-	SMinimalWaveFileHeader waveHeader;
-
 	// メインチャンク
 	std::memcpy(waveHeader.m_szChunkID, "RIFF", 4);
 	waveHeader.m_nChunkSize = nDataSize + 36; // 36はたぶんヘッダの分かな？
@@ -54,17 +51,49 @@ bool WriteWaveFile(const char* FileName, void* pData, int32_t nDataSize, int16_t
 	// サブチャンク 2
 	std::memcpy(waveHeader.m_szSubChunk2ID, "data", 4);
 	waveHeader.m_nSubChunk2Size = nDataSize;
+}
 
-	// ファイルにヘッダを書きこむ
-	fwrite(&waveHeader, sizeof(SMinimalWaveFileHeader), 1, File);
+bool PlayAudioOnApp(void* pData, int32_t nDataSize, int16_t nNumChannels, int32_t nSampleRate, int32_t nBitsPerSample)
+{
+	// wavを動的生成
+	SMinimalWaveFileHeader waveHeader;
+	GetWaveHeader(waveHeader, nDataSize, nNumChannels, nSampleRate, nBitsPerSample);
+	size_t HeaderSize = sizeof(SMinimalWaveFileHeader) * 1;
 
-	// waveデータを書き込む
-	fwrite(pData, nDataSize, 1, File);
+	std::vector<unsigned char> WavData;
+	WavData.resize(HeaderSize + nDataSize);
+	std::memcpy(&WavData[0], &waveHeader, sizeof(SMinimalWaveFileHeader));
+	std::memcpy(&WavData[sizeof(SMinimalWaveFileHeader) * 1], pData, nDataSize);
 
-	// ファイルのエクスポート
-	fclose(File);
+	//
+	sound::SoundPlayer player;
+	if(!player.Play(WavData.data(), false)) return false;
+
+	while (true)
+	{
+		printf("[%f] Playing ---------------------\n", static_cast<float>(clock()) * 0.001f);
+
+		if (GetKeyState(VK_ESCAPE))
+		{
+			break;
+		}
+	}
+
+	player.Stop();
+	WavData.clear();
 
 	return true;
+}
+
+void MakeWaveData(int32_t* pData, int nNumSamples)
+{
+	// Wave Data を作成
+	int32_t nValue = 0;
+	for (int nIndex = 0; nIndex < nNumSamples; nIndex++)
+	{
+		nValue += 8000000;
+		pData[nIndex] = nValue;
+	}
 }
 
 int main()
@@ -78,21 +107,14 @@ int main()
 	int nNumSamples = nSampleRate * nNumChannels * nNumSeconds; // オーディオサンプルの合計
 	int32_t* pData = new int32_t[nNumSamples];
 
-	// Wave Data を作成
-	int32_t nValue = 0;
-	for (int nIndex = 0; nIndex < nNumSamples; nIndex++)
-	{
-		nValue += 8000000;
-		pData[nIndex] = nValue;
-	}
+	//
+	MakeWaveData(pData, nNumSamples);
 
 	//
+	PlayAudioOnApp(pData, nNumSamples * sizeof(pData[0]), nNumChannels, nSampleRate, sizeof(pData[8]) * 8);
 	
-	WriteWaveFile("E:\\CppDev\\Cpp-Synth-Learning\\out\\test.wav", pData,
-		nNumSamples * sizeof(pData[0]), nNumChannels, nSampleRate, sizeof(pData[8]) * 8);
-
+	//
 	delete pData;
-
 
 	return 1;
 }
