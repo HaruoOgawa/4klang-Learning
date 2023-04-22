@@ -88,11 +88,13 @@ bool PlayAudioOnApp(void* pData, int32_t nDataSize, int16_t nNumChannels, int32_
 void MakeWaveData(int32_t* pData, int nNumSamples)
 {
 	// Wave Data ‚ğì¬
-	int32_t nValue = 0;
-	for (int nIndex = 0; nIndex < nNumSamples; nIndex++)
+	int32_t nValueL = 0, nValueR = 0;
+	for (int nIndex = 0; nIndex < nNumSamples; nIndex += 2)
 	{
-		nValue += 8000000;
-		pData[nIndex] = nValue;
+		nValueL += 8000000;
+		nValueR += 40000000;
+		pData[nIndex] = nValueL;
+		pData[nIndex + 1] = nValueR;
 	}
 }
 
