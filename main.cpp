@@ -6,6 +6,8 @@
 #include <vector>
 #include <time.h>
 
+#include "sound/4klang.h"
+
 //this struct is the minimal required header data for a wav file
 struct SMinimalWaveFileHeader
 {
@@ -67,11 +69,11 @@ bool PlayAudioOnApp(void* pData, int32_t nDataSize, int16_t nNumChannels, int32_
 
 	//
 	sound::SoundPlayer player;
-	if(!player.Play(WavData.data(), false)) return false;
+	if(!player.Play(WavData.data(), true)) return false;
 
 	while (true)
 	{
-		printf("[%f] Playing ---------------------\n", static_cast<float>(clock()) * 0.001f);
+		printf("Playing ---------------------\n");
 
 		if (GetKeyState(VK_ESCAPE))
 		{
@@ -98,12 +100,18 @@ void MakeWaveData(int32_t* pData, int nNumSamples)
 	}
 }
 
+// なんかよくわからんが、グローバルスコープじゃないとエラーになるっぽい(なんで 2 * 50が必要?)
+#define SND_CH 2
+SAMPLE_TYPE buffer[static_cast<int>(MAX_SAMPLES * SND_CH * 50)];
+
 int main()
 {
+	_4klang_render(buffer);
+
 	// 実験的にSawtooth waveを生成
 	int nSampleRate = 44100; // 1秒あたりのオーディオデータのサンプル数
 	// サンプル レートは、オーディオ ストリームに格納できる最大周波数も定義します。保存できる最大周波数は、サンプル レートの半分
-	int nNumSeconds = 4; // 再生時間
+	int nNumSeconds = 10; // 再生時間
 	int nNumChannels = 1; // オーディオチャンネル数
 
 	int nNumSamples = nSampleRate * nNumChannels * nNumSeconds; // オーディオサンプルの合計
