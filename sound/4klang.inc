@@ -8,14 +8,14 @@
 %define MAX_VOICES 2
 %define HLD 1
 %define BPM 160.000000
-%define MAX_PATTERNS 15
+%define MAX_PATTERNS 21
 %define PATTERN_SIZE_SHIFT 4
 %define PATTERN_SIZE (1 << PATTERN_SIZE_SHIFT)
 %define	MAX_TICKS (MAX_PATTERNS*PATTERN_SIZE)
 %define	SAMPLES_PER_TICK 4134
 %define DEF_LFO_NORMALIZE 0.0000604686
 %define	MAX_SAMPLES	(SAMPLES_PER_TICK*MAX_TICKS)
-;%define 	GO4K_USE_16BIT_OUTPUT
+%define 	GO4K_USE_16BIT_OUTPUT
 ;%define 	GO4K_USE_GROOVE_PATTERN
 ;%define 	GO4K_USE_ENVELOPE_RECORDINGS
 ;%define 	GO4K_USE_NOTE_RECORDINGS
@@ -401,7 +401,7 @@ go4k_patterns
 	db	HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, 
 	db	57, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, 
 	db	53, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, HLD, 
-	db	53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	db	55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 	db	43, 0, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 0, 41, 0, 
 	db	41, 0, 43, 0, 43, 0, 0, 0, 0, 0, 0, 0, 55, 0, 0, 0, 
 	db	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 0, 45, 0, 
@@ -410,7 +410,7 @@ go4k_patterns
 	db	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 0, 38, 0, 
 	db	41, 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 	db	48, 0, 48, 0, 0, 0, 48, 0, 47, 0, 0, 0, 50, HLD, HLD, 0, 
-	db	41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	db	43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 	db	0, 0, 0, 0, 67, 0, 0, 0, 83, 0, 0, 0, 0, 0, 67, 0, 
 	db	0, 0, 83, 0, 0, 0, 0, 0, 67, 0, 0, 0, 83, 0, 0, 0, 
 	db	0, 0, 0, 0, 69, 0, 0, 0, 84, 0, 0, 0, 0, 0, 69, 0, 
@@ -425,12 +425,12 @@ section .g4kmuc2 data align=1
 section .data
 %endif
 go4k_pattern_lists
-Instrument0List		db	1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 0, 0, 
-Instrument1List		db	4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 0, 0, 
-Instrument2List		db	5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 
-Instrument3List		db	6, 7, 8, 7, 9, 7, 7, 7, 6, 7, 8, 7, 10, 0, 0, 
-Instrument4List		db	11, 12, 13, 14, 15, 16, 17, 18, 11, 12, 13, 14, 19, 0, 0, 
-Instrument5List		db	20, 21, 22, 23, 24, 25, 26, 23, 20, 21, 22, 23, 0, 0, 0, 
+Instrument0List		db	1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 0, 0, 0, 0, 
+Instrument1List		db	4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 0, 0, 0, 0, 
+Instrument2List		db	5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 
+Instrument3List		db	6, 7, 8, 7, 9, 7, 7, 7, 6, 7, 8, 7, 9, 7, 7, 7, 10, 0, 0, 0, 0, 
+Instrument4List		db	11, 12, 13, 14, 15, 16, 17, 18, 11, 12, 13, 14, 15, 16, 17, 18, 19, 0, 0, 0, 0, 
+Instrument5List		db	20, 21, 22, 23, 24, 25, 26, 23, 20, 21, 22, 23, 24, 25, 26, 23, 0, 0, 0, 0, 0, 
 go4k_pattern_lists_end
 %ifdef USE_SECTIONS
 section .g4kmuc3 data align=1

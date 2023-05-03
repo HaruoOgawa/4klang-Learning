@@ -87,44 +87,15 @@ bool PlayAudioOnApp(void* pData, int32_t nDataSize, int16_t nNumChannels, int32_
 	return true;
 }
 
-void MakeWaveData(int32_t* pData, int nNumSamples)
-{
-	// Wave Data を作成
-	int32_t nValueL = 0, nValueR = 0;
-	for (int nIndex = 0; nIndex < nNumSamples; nIndex += 2)
-	{
-		nValueL += 8000000;
-		nValueR += 40000000;
-		pData[nIndex] = nValueL;
-		pData[nIndex + 1] = nValueR;
-	}
-}
-
-// なんかよくわからんが、グローバルスコープじゃないとエラーになるっぽい(なんで 2 * 50が必要?)
-#define SND_CH 2
-SAMPLE_TYPE buffer[static_cast<int>(MAX_SAMPLES * SND_CH * 50)];
-
 int main()
 {
+	int nNumSamples = MAX_SAMPLES * POLYPHONY;
+
+	SAMPLE_TYPE* buffer = new SAMPLE_TYPE[nNumSamples];
 	_4klang_render(buffer);
+	PlayAudioOnApp(buffer, nNumSamples * sizeof(SAMPLE_TYPE), POLYPHONY, SAMPLE_RATE, sizeof(SAMPLE_TYPE) * 8);
 
-	// 実験的にSawtooth waveを生成
-	int nSampleRate = 44100; // 1秒あたりのオーディオデータのサンプル数
-	// サンプル レートは、オーディオ ストリームに格納できる最大周波数も定義します。保存できる最大周波数は、サンプル レートの半分
-	int nNumSeconds = 10; // 再生時間
-	int nNumChannels = 1; // オーディオチャンネル数
-
-	int nNumSamples = nSampleRate * nNumChannels * nNumSeconds; // オーディオサンプルの合計
-	int32_t* pData = new int32_t[nNumSamples];
-
-	//
-	MakeWaveData(pData, nNumSamples);
-
-	//
-	PlayAudioOnApp(pData, nNumSamples * sizeof(pData[0]), nNumChannels, nSampleRate, sizeof(pData[8]) * 8);
-	
-	//
-	delete pData;
+	delete buffer;
 
 	return 1;
 }
